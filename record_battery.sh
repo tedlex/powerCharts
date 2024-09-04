@@ -39,6 +39,8 @@ elif [ "$battery_status" = "charging" ]; then
     charging=1
 elif [ "$battery_status" = "AC attached" ]; then
     charging=2
+elif [ "$battery_status" = "charged" ]; then
+    charging=2
 else
     charging=3
 fi

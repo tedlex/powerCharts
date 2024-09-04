@@ -31,13 +31,13 @@ if [ $(echo "$battery_info" | wc -l) -eq 2 ]; then
     battery_info=$(echo "$battery_info" | sed -n '2p')
 fi
 
-percentage=$(echo $battery_info | awk -F '; ' 'NR==1 {print $1}' | awk '{print $NF}' | awk -F '%' '{print $1}')
-battery_status=$(echo $battery_info | awk -F '; ' 'NR==1 {print $2}')
-if [ $battery_status == "discharging" ]; then
+percentage=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $1}' | awk '{print $NF}' | awk -F '%' '{print $1}')
+battery_status=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $2}')
+if [ "$battery_status" = "discharging" ]; then
     charging=0
-elif [ $battery_status == "charging" ]; then
+elif [ "$battery_status" = "charging" ]; then
     charging=1
-elif [ $battery_status == "AC attached" ]; then
+elif [ "$battery_status" = "AC attached" ]; then
     charging=2
 else
     charging=3

@@ -10,8 +10,11 @@ The data is recorded using Crontab. It is a built-in tool on your mac that can r
 
 App Store doesn't allow apps to edit Crontab tasks. So you have to do it manually. It's super easy! Just follow the instructions below:
 
+## Download App
 
-## Install
+Download the app from [App Store](https://apps.apple.com/app/powercharts/id6670771667).
+
+## Install Crontab Task
 
 1. Open Terminal
 

@@ -19,6 +19,8 @@ NC='\033[0m' # No Color
 
 # Functions
 function install() {
+    echo -e "checking data format..."
+    test
     echo -e "${YELLOW}Do you want to install at the default directory? ($DEFAULT_INSTALL_DIR)${NC}"
     read -p "(y/n): " use_default
     if [ "$use_default" = "n" ] || [ "$use_default" = "N" ]; then
@@ -84,6 +86,72 @@ function uninstall() {
         echo -e "${GREEN}Directory and data removed.${NC}"
     else
         echo -e "${YELLOW}Directory and data preserved.${NC}"
+    fi
+}
+
+function test() {
+    # Capture output of test1 and test2
+    output1=$(test1)
+    output2=$(test2)
+
+    # Check if there are any warnings in the output
+    if [[ -z "$output1" && -z "$output2" ]]; then
+        echo -e "${GREEN}Data format valid${NC}"
+    else
+        echo -e "${RED}Find invalid data format:${NC}"
+        [[ -n "$output1" ]] && echo "$output1"
+        [[ -n "$output2" ]] && echo "$output2"
+        echo -e "${RED}Invalid data format could cause the app not working properly. Please contact us for help if that happens.${NC}"
+    fi
+}
+
+function test1() {
+    # Fetch and format battery information
+    battery_info=$(pmset -g batt)
+    # If there are two lines, use the second line
+    if [ $(echo "$battery_info" | wc -l) -eq 2 ]; then
+        battery_info=$(echo "$battery_info" | sed -n '2p')
+    fi
+
+    percentage=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $1}' | awk '{print $NF}' | awk -F '%' '{print $1}')
+    battery_status=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $2}')
+    if [ "$battery_status" = "discharging" ]; then
+        charging=0
+    elif [ "$battery_status" = "charging" ]; then
+        charging=1
+    elif [ "$battery_status" = "AC attached" ]; then
+        charging=2
+    elif [ "$battery_status" = "charged" ]; then
+        charging=2
+    else
+        charging=3
+    fi
+    
+    # Check if percentage is 1-3 digits of number
+    if ! [[ $percentage =~ ^[0-9]{1,3}$ ]]; then
+        echo -e "${RED}Battery percentage data invalid:${NC} $percentage"
+    fi
+
+    # Check if charging status is unrecognized
+    if [ "$charging" -eq 3 ]; then
+        echo -e "${RED}Charging status unrecognized:${NC} $charging"
+    fi
+}
+
+function test2() {
+    battery_health=$(/usr/sbin/system_profiler SPPowerDataType)
+
+    cycle_count=$(echo "$battery_health" | grep "Cycle Count" | awk '{print $3}')
+    max_capacity=$(echo "$battery_health" | grep "Maximum Capacity" | awk '{print $3}')
+    
+    # Check if cycle_count is a number
+    if ! [[ $cycle_count =~ ^[0-9]+$ ]]; then
+        echo -e "${RED}Cycle count is not a valid number:${NC} $cycle_count"
+    fi
+
+    # Check if max_capacity is a number followed by optional whitespace and "%"
+    if ! [[ $max_capacity =~ ^[0-9]+.*%$ ]]; then
+        echo -e "${RED}Maximum capacity is not in the expected format:${NC} $max_capacity"
     fi
 }
 

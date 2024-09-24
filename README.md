@@ -12,7 +12,7 @@ App Store doesn't allow apps to edit Crontab tasks. So you have to do it manuall
 
 ## Download App
 
-Download the app from [App Store](https://apps.apple.com/app/powercharts/id6670771667).
+You can download the app from App Store. Try the [Lite version](https://apps.apple.com/app/powercharts-lite/id6698893806) for free or purchase the [complete version](https://apps.apple.com/app/powercharts/id6670771667).
 
 ## Install Crontab Task
 

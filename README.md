@@ -2,25 +2,19 @@
 
 powerCharts helps you visualize your Macbook's battery usage and health data. You can download the app from App Store.
 
-It calculates the battery's consumption rates for you, so you can easily tell whether your mac's battery can last 10 hours like Apple advertises.
+It calculates the battery's consumption rates for you, so you can easily tell whether your mac's battery can last 10 hours like Apple advertised.
 
 ![](https://github.com/user-attachments/assets/364e2b6e-2ece-4961-a6a9-9cfacb9fb9dd)
 
-The data is recorded using Crontab. It is a built-in tool on your mac that can run scripts at specified times. We will use it to write your battery data to a csv file periodically.
+## Quick Start
 
-App Store doesn't allow apps to edit Crontab tasks. So you have to do it manually. It's super easy! Just follow the instructions below:
+1. Download the app from App Store
 
-## Download App
+   You can download the app from App Store. Try the [Lite version](https://apps.apple.com/app/powercharts-lite/id6698893806) for free or purchase the [complete version](https://apps.apple.com/app/powercharts/id6670771667).
 
-You can download the app from App Store. Try the [Lite version](https://apps.apple.com/app/powercharts-lite/id6698893806) for free or purchase the [complete version](https://apps.apple.com/app/powercharts/id6670771667).
+2. Install Crontab Task
 
-## Install Crontab Task
-
-1. Open Terminal
-
-   Terminal is a built-in app on your Mac.
-
-2. Copy the following command and paste it into Terminal:
+   Open Terminal (it is a built-in app on your Mac). Copy the following command and paste it into Terminal:
 
    ```
    curl -o "powerCharts_install.sh" "https://raw.githubusercontent.com/tedlex/powerCharts/main/install.sh" && \
@@ -30,6 +24,19 @@ You can download the app from App Store. Try the [Lite version](https://apps.app
    ```
 
    Press `Enter`/`Return` to run the command.
+
+   ### What is this?
+
+   Crontab is a built-in tool on your Mac that can run scripts at specified times. We will use it to write your battery data to a csv file periodically. The command above will download a script that can install the crontab task for you.
+
+   ### Why do I need to run the command in Terminal?
+
+   App Store doesn't allow third-party apps to edit Crontab tasks. So you have to do it manually :( I made this script to make it easier for you.
+
+   ### Is it safe?
+
+   Yes! The script is open source on Github. Everyone can see what it does. And if you don't know the code, you can ask chatgpt about what it does ;) This app is also completely offline so your data is safe. 
+
 
 ## Uninstall or Update
 

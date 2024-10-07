@@ -26,25 +26,27 @@ fi
 
 # Function to get battery percentage and charging status
 get_battery_info() {
-    local battery_info=$(pmset -g batt)
-    # If there are two lines, use the second line
-    if [ $(echo "$battery_info" | wc -l) -eq 2 ]; then
-        battery_info=$(echo "$battery_info" | sed -n '2p')
-    fi
-
-    local percentage=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $1}' | awk '{print $NF}' | awk -F '%' '{print $1}')
-    local battery_status=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $2}')
+    local battery_info=$(/usr/sbin/ioreg -r -c AppleSmartBattery)
+    
+    # Get current and max capacity
+    local current_capacity=$(echo "$battery_info" | grep '"CurrentCapacity" =' | awk '{print $3}')
+    local max_capacity=$(echo "$battery_info" | grep '"MaxCapacity" =' | awk '{print $3}')
+    
+    # Calculate percentage
+    local percentage=$((current_capacity * 100 / max_capacity))
+    
+    # Determine charging status
+    local is_charging=$(echo "$battery_info" | grep '"IsCharging" =' | awk '{print $3}')
+    local external_connected=$(echo "$battery_info" | grep '"ExternalConnected" =' | awk '{print $3}')
+    local fully_charged=$(echo "$battery_info" | grep '"FullyCharged" =' | awk '{print $3}')
+    
     local charging
-    if [ "$battery_status" = "discharging" ]; then
-        charging=0
-    elif [ "$battery_status" = "charging" ]; then
+    if [ "$is_charging" = "Yes" ]; then
         charging=1
-    elif [ "$battery_status" = "AC attached" ]; then
-        charging=2
-    elif [ "$battery_status" = "charged" ]; then
+    elif [ "$external_connected" = "Yes" ]; then
         charging=2
     else
-        charging=3
+        charging=0
     fi
 
     echo "${percentage},${charging}"

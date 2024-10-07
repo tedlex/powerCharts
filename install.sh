@@ -106,25 +106,24 @@ function test() {
 }
 
 function test1() {
-    # Fetch and format battery information
-    battery_info=$(pmset -g batt)
-    # If there are two lines, use the second line
-    if [ $(echo "$battery_info" | wc -l) -eq 2 ]; then
-        battery_info=$(echo "$battery_info" | sed -n '2p')
-    fi
-
-    percentage=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $1}' | awk '{print $NF}' | awk -F '%' '{print $1}')
-    battery_status=$(echo "$battery_info" | awk -F '; ' 'NR==1 {print $2}')
-    if [ "$battery_status" = "discharging" ]; then
-        charging=0
-    elif [ "$battery_status" = "charging" ]; then
+    # Fetch battery information using ioreg
+    battery_info=$(/usr/sbin/ioreg -r -c AppleSmartBattery)
+    
+    # Calculate percentage
+    current_capacity=$(echo "$battery_info" | grep '"CurrentCapacity" =' | awk '{print $3}')
+    max_capacity=$(echo "$battery_info" | grep '"MaxCapacity" =' | awk '{print $3}')
+    percentage=$((current_capacity * 100 / max_capacity))
+    
+    # Determine charging status
+    is_charging=$(echo "$battery_info" | grep '"IsCharging" =' | awk '{print $3}')
+    external_connected=$(echo "$battery_info" | grep '"ExternalConnected" =' | awk '{print $3}')
+    
+    if [ "$is_charging" = "Yes" ]; then
         charging=1
-    elif [ "$battery_status" = "AC attached" ]; then
-        charging=2
-    elif [ "$battery_status" = "charged" ]; then
+    elif [ "$external_connected" = "Yes" ]; then
         charging=2
     else
-        charging=3
+        charging=0
     fi
     
     # Check if percentage is 1-3 digits of number
@@ -132,9 +131,9 @@ function test1() {
         echo -e "${RED}Battery percentage data invalid:${NC} $percentage"
     fi
 
-    # Check if charging status is unrecognized
-    if [ "$charging" -eq 3 ]; then
-        echo -e "${RED}Charging status unrecognized:${NC} $charging"
+    # Check if charging status is valid (0, 1, or 2)
+    if ! [[ $charging =~ ^[0-2]$ ]]; then
+        echo -e "${RED}Charging status invalid:${NC} $charging"
     fi
 }
 

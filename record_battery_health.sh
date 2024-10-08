@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export LC_ALL=en_US.UTF-8
+
 # Check if an argument is provided
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <path_to_csv_file>"
